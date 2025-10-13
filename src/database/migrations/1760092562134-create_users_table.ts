@@ -3,13 +3,14 @@ import { ATTR_COLUMN_USER, ATTR_TABLE_USER } from '../entities/user.entity';
 
 export class CreateUsersTable1760092562134 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const bigInt = process.env.DB_TYPE === 'sqlite' ? 'integer' : 'bigInt';
     await queryRunner.createTable(
       new Table({
         name: ATTR_TABLE_USER,
         columns: [
           {
             name: ATTR_COLUMN_USER.ATTR_INT_ID,
-            type: 'bigint',
+            type: bigInt,
             isPrimary: true,
             isGenerated: true,
             isNullable: false,
@@ -46,6 +47,7 @@ export class CreateUsersTable1760092562134 implements MigrationInterface {
             name: ATTR_COLUMN_USER.ATTR_CHAR_EMAIL,
             type: 'varchar',
             length: '125',
+            isUnique: true,
             isNullable: false,
           },
           {
@@ -69,13 +71,13 @@ export class CreateUsersTable1760092562134 implements MigrationInterface {
           },
           {
             name: ATTR_COLUMN_USER.ATTR_INT_CREATED_BY,
-            type: 'bigint',
+            type: bigInt,
             isNullable: true,
             unsigned: true,
           },
           {
             name: ATTR_COLUMN_USER.ATTR_INT_UPDATED_BY,
-            type: 'bigint',
+            type: bigInt,
             isNullable: true,
             unsigned: true,
           },
@@ -100,6 +102,6 @@ export class CreateUsersTable1760092562134 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable(ATTR_TABLE_USER);
+    await queryRunner.dropTable(ATTR_TABLE_USER, true);
   }
 }

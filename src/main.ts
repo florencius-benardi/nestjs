@@ -1,7 +1,7 @@
-import { NestApplication, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigModule } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
+import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
+import { AppModule } from './app/http/app.module';
+// import { ConfigModule } from '@nestjs/config';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -17,6 +17,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const configSwagger = new DocumentBuilder()
     .setTitle('Learn Nest.JS')

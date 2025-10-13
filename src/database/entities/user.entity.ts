@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
@@ -25,12 +26,12 @@ export const ATTR_COLUMN_USER = {
 } as const;
 
 @Entity({ name: ATTR_TABLE_USER })
-@Unique(`UK_username`, [ATTR_COLUMN_USER.ATTR_CHAR_USERNAME])
-@Unique(`UK_email`, [ATTR_COLUMN_USER.ATTR_CHAR_EMAIL])
+// @Unique(`UK_username`, [ATTR_COLUMN_USER.ATTR_CHAR_USERNAME])
+// @Unique(`UK_email`, [ATTR_COLUMN_USER.ATTR_CHAR_EMAIL])
 export class User {
   @PrimaryGeneratedColumn({
     name: ATTR_COLUMN_USER.ATTR_INT_ID,
-    type: 'bigint',
+    type: process.env.DB_TYPE === 'postgres' ? 'bigint' : 'int',
     unsigned: true,
   })
   id: number;
@@ -72,6 +73,7 @@ export class User {
     name: ATTR_COLUMN_USER.ATTR_CHAR_CONFIRMATION_CODE,
     length: 255,
     nullable: true,
+    select: false,
   })
   confirmationCode: string | null;
 
@@ -100,22 +102,23 @@ export class User {
   })
   updatedById: number | null;
 
-  @Column({
+  @CreateDateColumn({
     name: ATTR_COLUMN_USER.ATTR_DATETIME_CREATED,
-    type: 'timestamptz',
+    type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt?: Date;
 
-  @Column({
+  @CreateDateColumn({
     name: ATTR_COLUMN_USER.ATTR_DATETIME_UPDATED,
-    type: 'timestamptz',
+    type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
   })
   updatedAt?: Date;
 
   @DeleteDateColumn({
     name: ATTR_COLUMN_USER.ATTR_DATETIME_DELETED,
-    type: 'timestamptz',
+    type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
+    select: false,
   })
   deletedAt?: Date;
 }
