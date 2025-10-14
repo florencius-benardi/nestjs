@@ -3,12 +3,15 @@ import { AppModule } from './app/http/app.module';
 // import { ConfigModule } from '@nestjs/config';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
     cors: true,
     logger: ['error', 'warn'],
   });
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   app.useGlobalPipes(
     new ValidationPipe({

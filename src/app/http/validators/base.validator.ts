@@ -27,7 +27,6 @@ export class BaseDatatable {
 
   @Expose({ name: 'sort_order[]' })
   @Transform(({ value }) => {
-    console.log(value);
     if (Array.isArray(value)) return value;
     if (typeof value === 'string') return value.split(',').map((v) => v.trim());
     return [];

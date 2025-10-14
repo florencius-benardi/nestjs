@@ -1,12 +1,21 @@
 export class BaseService {
-  orderQuery(sortOrder: string[], orderBy: string[]) {
+  orderQuery(sortOrder: string[], orderBy: string[], defaultOrder: string[]) {
     const orderData: Record<string, 'ASC' | 'DESC'> = {};
-    orderBy.forEach((field, index) => {
-      const fieldCamel = this.snakeToCamel(orderBy[index]);
+
+    if (orderBy.length > 0) {
+      orderBy.forEach((field, index) => {
+        const fieldCamel = this.snakeToCamel(field);
+        const direction =
+          (sortOrder[index]?.toUpperCase() ?? 'DESC') === 'DESC'
+            ? 'DESC'
+            : 'ASC';
+        orderData[fieldCamel] = direction;
+      });
+    } else {
       const direction =
-        (sortOrder[index]?.toUpperCase() ?? 'DESC') === 'DESC' ? 'DESC' : 'ASC';
-      orderData[fieldCamel] = direction;
-    });
+        (defaultOrder[0]?.toUpperCase() ?? 'DESC') === 'DESC' ? 'DESC' : 'ASC';
+      orderData[this.snakeToCamel(defaultOrder[0])] = direction;
+    }
 
     return orderData;
   }
