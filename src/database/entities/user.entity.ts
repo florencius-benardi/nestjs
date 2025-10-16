@@ -17,171 +17,172 @@ import { Expose } from 'class-transformer';
 
 export const ATTR_TABLE_USER = 'users';
 export const ATTR_COLUMN_USER = {
-  ATTR_CHAR_USERNAME: 'username',
-  ATTR_CHAR_FIRSTNAME: 'first_name',
-  ATTR_CHAR_LASTNAME: 'last_name',
-  ATTR_CHAR_EMAIL: 'email',
-  ATTR_CHAR_PASSWORD: 'password',
-  ATTR_CHAR_CONFIRMATION_CODE: 'confirmation_code',
-  ATTR_CHAR_TOKEN: 'token',
-  ATTR_INT_ID: 'id',
-  ATTR_INT_STATUS: 'status',
-  ATTR_INT_CREATED_BY: 'created_by_id',
-  ATTR_INT_UPDATED_BY: 'updated_by_id',
-  ATTR_DATETIME_CREATED: 'created_at',
-  ATTR_DATETIME_UPDATED: 'updated_at',
-  ATTR_DATETIME_DELETED: 'deleted_at',
-  ATTR_CHAR_ENCRYPTION: 'encryption_id',
-  ATTR_RELATION_UPDATED_BY: 'updated_by',
-  ATTR_RELATION_CREATED_BY: 'created_by',
+  CHAR_USERNAME: 'username',
+  CHAR_FIRSTNAME: 'first_name',
+  CHAR_LASTNAME: 'last_name',
+  CHAR_EMAIL: 'email',
+  CHAR_PASSWORD: 'password',
+  CHAR_CONFIRMATION_CODE: 'confirmation_code',
+  CHAR_TOKEN: 'token',
+  INT_ID: 'id',
+  INT_STATUS: 'status',
+  INT_CREATED_BY: 'created_by_id',
+  INT_UPDATED_BY: 'updated_by_id',
+  DATETIME_CREATED: 'created_at',
+  DATETIME_UPDATED: 'updated_at',
+  DATETIME_DELETED: 'deleted_at',
+  CHAR_ENCRYPTION: 'encryption_id',
+  RELATION_UPDATED_BY: 'updated_by',
+  RELATION_CREATED_BY: 'created_by',
 } as const;
 
 @Entity({ name: ATTR_TABLE_USER })
-// @Unique(`UK_username`, [ATTR_COLUMN_USER.ATTR_CHAR_USERNAME])
-// @Unique(`UK_email`, [ATTR_COLUMN_USER.ATTR_CHAR_EMAIL])
+// @Unique(`UK_username`, [ATTR_COLUMN_USER.CHAR_USERNAME])
+// @Unique(`UK_email`, [ATTR_COLUMN_USER.CHAR_EMAIL])
 export class User {
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_INT_ID })
+  @Expose({ name: ATTR_COLUMN_USER.INT_ID })
   @PrimaryGeneratedColumn({
-    name: ATTR_COLUMN_USER.ATTR_INT_ID,
+    name: ATTR_COLUMN_USER.INT_ID,
     type: process.env.DB_TYPE === 'postgres' ? 'bigint' : 'int',
     unsigned: true,
   })
-  id: number;
+  [ATTR_COLUMN_USER.INT_ID]: number;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_CHAR_USERNAME })
+  @Expose({ name: ATTR_COLUMN_USER.CHAR_USERNAME })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_CHAR_USERNAME,
+    name: ATTR_COLUMN_USER.CHAR_USERNAME,
     length: 25,
     unique: true,
     update: false,
   })
-  userName: string;
+  [ATTR_COLUMN_USER.CHAR_USERNAME]: string;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_CHAR_FIRSTNAME })
-  @Column({ name: ATTR_COLUMN_USER.ATTR_CHAR_FIRSTNAME, length: 25 })
-  firstName: string;
+  @Expose({ name: ATTR_COLUMN_USER.CHAR_FIRSTNAME })
+  @Column({ name: ATTR_COLUMN_USER.CHAR_FIRSTNAME, length: 25 })
+  [ATTR_COLUMN_USER.CHAR_FIRSTNAME]: string;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_CHAR_LASTNAME })
+  @Expose({ name: ATTR_COLUMN_USER.CHAR_LASTNAME })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_CHAR_LASTNAME,
+    name: ATTR_COLUMN_USER.CHAR_LASTNAME,
     length: 25,
     nullable: true,
   })
-  lastName: string | null;
+  [ATTR_COLUMN_USER.CHAR_LASTNAME]: string | null;
 
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_CHAR_EMAIL,
+    name: ATTR_COLUMN_USER.CHAR_EMAIL,
     length: 125,
     nullable: false,
+    unique: true,
   })
-  email: string;
+  [ATTR_COLUMN_USER.CHAR_EMAIL]: string;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_CHAR_PASSWORD })
+  @Expose({ name: ATTR_COLUMN_USER.CHAR_PASSWORD })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_CHAR_PASSWORD,
+    name: ATTR_COLUMN_USER.CHAR_PASSWORD,
     length: 125,
     nullable: false,
     select: false,
   })
-  password: string;
+  [ATTR_COLUMN_USER.CHAR_PASSWORD]: string;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_CHAR_CONFIRMATION_CODE })
+  @Expose({ name: ATTR_COLUMN_USER.CHAR_CONFIRMATION_CODE })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_CHAR_CONFIRMATION_CODE,
+    name: ATTR_COLUMN_USER.CHAR_CONFIRMATION_CODE,
     length: 255,
     nullable: true,
     select: false,
   })
-  confirmationCode: string | null;
+  [ATTR_COLUMN_USER.CHAR_CONFIRMATION_CODE]: string | null;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_INT_STATUS })
+  @Expose({ name: ATTR_COLUMN_USER.INT_STATUS })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_INT_STATUS,
+    name: ATTR_COLUMN_USER.INT_STATUS,
     default: 1,
     nullable: false,
     type: 'mediumint',
     unsigned: true,
   })
-  status: number | null;
+  [ATTR_COLUMN_USER.INT_STATUS]: number | null;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_INT_CREATED_BY })
+  @Expose({ name: ATTR_COLUMN_USER.INT_CREATED_BY })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_INT_CREATED_BY,
+    name: ATTR_COLUMN_USER.INT_CREATED_BY,
     nullable: true,
     type: 'bigint',
     unsigned: true,
   })
-  createdById: number | null;
+  [ATTR_COLUMN_USER.INT_CREATED_BY]: number | null;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_INT_UPDATED_BY })
+  @Expose({ name: ATTR_COLUMN_USER.INT_UPDATED_BY })
   @Column({
-    name: ATTR_COLUMN_USER.ATTR_INT_UPDATED_BY,
+    name: ATTR_COLUMN_USER.INT_UPDATED_BY,
     nullable: true,
     type: 'bigint',
     unsigned: true,
   })
-  updatedById: number | null;
+  [ATTR_COLUMN_USER.INT_UPDATED_BY]: number | null;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_DATETIME_CREATED })
+  @Expose({ name: ATTR_COLUMN_USER.DATETIME_CREATED })
   @CreateDateColumn({
-    name: ATTR_COLUMN_USER.ATTR_DATETIME_CREATED,
+    name: ATTR_COLUMN_USER.DATETIME_CREATED,
     type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  createdAt?: Date;
+  [ATTR_COLUMN_USER.DATETIME_CREATED]?: Date;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_DATETIME_UPDATED })
+  @Expose({ name: ATTR_COLUMN_USER.DATETIME_UPDATED })
   @CreateDateColumn({
-    name: ATTR_COLUMN_USER.ATTR_DATETIME_UPDATED,
+    name: ATTR_COLUMN_USER.DATETIME_UPDATED,
     type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
   })
-  updatedAt?: Date;
+  [ATTR_COLUMN_USER.DATETIME_UPDATED]?: Date;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_DATETIME_DELETED })
+  @Expose({ name: ATTR_COLUMN_USER.DATETIME_DELETED })
   @DeleteDateColumn({
-    name: ATTR_COLUMN_USER.ATTR_DATETIME_DELETED,
+    name: ATTR_COLUMN_USER.DATETIME_DELETED,
     type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
     select: false,
   })
-  deletedAt?: Date;
+  [ATTR_COLUMN_USER.DATETIME_DELETED]?: Date;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_CHAR_ENCRYPTION })
-  encryptionId?: string;
+  @Expose({ name: ATTR_COLUMN_USER.CHAR_ENCRYPTION })
+  [ATTR_COLUMN_USER.CHAR_ENCRYPTION]?: string;
 
   @AfterLoad()
   encodeValue() {
-    this.encryptionId = encodedID(this.id);
+    this[ATTR_COLUMN_USER.CHAR_ENCRYPTION] = encodedID(this.id);
   }
 
   // RELATION
   // 👇 Relation field (the single user who updated this record)
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY })
+  @Expose({ name: ATTR_COLUMN_USER.RELATION_CREATED_BY })
   @ManyToOne(() => User, {
     nullable: true,
   })
   @JoinColumn({
-    name: ATTR_COLUMN_USER.ATTR_INT_CREATED_BY,
-    referencedColumnName: ATTR_COLUMN_USER.ATTR_INT_ID,
+    name: ATTR_COLUMN_USER.INT_CREATED_BY,
+    referencedColumnName: ATTR_COLUMN_USER.INT_ID,
   })
-  createdBy?: User;
+  [ATTR_COLUMN_USER.RELATION_CREATED_BY]?: User;
 
-  @Expose({ name: ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY })
+  @Expose({ name: ATTR_COLUMN_USER.RELATION_UPDATED_BY })
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({
-    name: ATTR_COLUMN_USER.ATTR_INT_UPDATED_BY,
-    referencedColumnName: ATTR_COLUMN_USER.ATTR_INT_ID,
+    name: ATTR_COLUMN_USER.INT_UPDATED_BY,
+    referencedColumnName: ATTR_COLUMN_USER.INT_ID,
   })
-  updatedBy?: User;
+  [ATTR_COLUMN_USER.RELATION_UPDATED_BY]?: User;
 
   // @OneToOne(() => User, (user) => user.createdUsers, { nullable: true })
-  // @JoinColumn({ name: ATTR_COLUMN_USER.ATTR_INT_CREATED_BY })
+  // @JoinColumn({ name: ATTR_COLUMN_USER.INT_CREATED_BY })
   // createdBy?: User;
 
-  @OneToMany(() => User, (user) => user.createdBy)
-  usersCreated?: User[];
+  // @OneToMany(() => User, (user) => user[ATTR_COLUMN_USER.created])
+  // usersCreated?: User[];
 
-  @OneToMany(() => User, (user) => user.updatedBy)
-  usersUpdated?: User[];
+  // @OneToMany(() => User, (user) => user.updatedBy)
+  // usersUpdated?: User[];
 
   // @OneToMany(() => User, (user) => user.updatedBy)
   // updatedUsers?: User[];

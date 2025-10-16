@@ -11,13 +11,13 @@ export class UserSeeder1760106337844 implements MigrationInterface {
     await queryRunner.startTransaction();
     try {
       const userData: Partial<User> = {
-        userName: 'ADMIN',
+        username: 'ADMIN',
         email: 'admin@localhost.com',
-        firstName: 'administrator',
+        first_name: 'administrator',
         password: 'administrator',
         status: 1,
-        createdById: 1,
-        updatedById: 1,
+        created_by_id: 1,
+        updated_by_id: 1,
       };
 
       await queryRunner.manager.insert(User, [userData]);
@@ -33,7 +33,7 @@ export class UserSeeder1760106337844 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `DELETE FROM ${ATTR_TABLE_USER} WHERE ${ATTR_COLUMN_USER.ATTR_CHAR_EMAIL} = 'admin@localhost.com'`,
+      `DELETE FROM ${ATTR_TABLE_USER} WHERE ${ATTR_COLUMN_USER.CHAR_EMAIL} = 'admin@localhost.com'`,
     );
   }
 }

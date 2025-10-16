@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { config } from 'dotenv';
 import Hashids from 'hashids';
 
@@ -13,5 +14,14 @@ export function encodedID(id: number): string {
 export function decodedID(id: string): number {
   const salt = process.env.HASHIDS_SALT;
   const hashids = new Hashids(salt, 15);
-  return Number(hashids.decode(id)[1]);
+
+  if (typeof id == 'string') {
+    if (hashids.decode(id)?.[1] == undefined)
+      throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
+    else {
+      return Number(hashids.decode(id)?.[1]);
+    }
+  }
+
+  return Number(id);
 }

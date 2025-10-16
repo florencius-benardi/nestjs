@@ -4,17 +4,16 @@ export class BaseService {
 
     if (orderBy.length > 0) {
       orderBy.forEach((field, index) => {
-        const fieldCamel = this.snakeToCamel(field);
         const direction =
           (sortOrder[index]?.toUpperCase() ?? 'DESC') === 'DESC'
             ? 'DESC'
             : 'ASC';
-        orderData[fieldCamel] = direction;
+        orderData[field] = direction;
       });
     } else {
       const direction =
         (defaultOrder[0]?.toUpperCase() ?? 'DESC') === 'DESC' ? 'DESC' : 'ASC';
-      orderData[this.snakeToCamel(defaultOrder[0])] = direction;
+      orderData[defaultOrder[0]] = direction;
     }
 
     return orderData;

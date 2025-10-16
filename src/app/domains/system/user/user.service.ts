@@ -9,9 +9,9 @@ import { Repository } from 'typeorm';
 import {
   ReadUsers,
   StoreUser,
-} from '../../../http/validators/systems/users/user.validator';
+  UpdateUser,
+} from '../../../modules/system/user/user.validator';
 import { BaseService } from '../../base.service';
-import { decodedID } from '../../../commons/utils/hashId.util';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -25,7 +25,7 @@ export class UserService extends BaseService {
   async reads(dto: ReadUsers) {
     const { length, start, orderBy, sortOrder } = dto;
     const order = this.orderQuery(sortOrder, orderBy, [
-      ATTR_COLUMN_USER.ATTR_DATETIME_UPDATED,
+      ATTR_COLUMN_USER.DATETIME_UPDATED,
       'DESC',
     ]);
     const { take, skip } = this.limitOffset(length, start);
@@ -34,19 +34,19 @@ export class UserService extends BaseService {
       take,
       order,
       relations: [
-        this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY),
-        this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY),
+        ATTR_COLUMN_USER.RELATION_CREATED_BY,
+        ATTR_COLUMN_USER.RELATION_UPDATED_BY,
       ],
       select: {
-        [this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY)]: {
+        created_by: {
           id: true,
-          firstName: true,
-          lastName: true,
+          first_name: true,
+          last_name: true,
         },
-        [this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY)]: {
+        updated_by: {
           id: true,
-          firstName: true,
-          lastName: true,
+          first_name: true,
+          last_name: true,
         },
       },
       loadEagerRelations: true,
@@ -55,23 +55,23 @@ export class UserService extends BaseService {
     return { data: result[0], count: result[1] };
   }
 
-  async read(id: string) {
+  async read(id: number) {
     return await this.userRepository.findOne({
-      where: { id: decodedID(id) },
+      where: { id },
       relations: [
-        this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY),
-        this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY),
+        ATTR_COLUMN_USER.RELATION_CREATED_BY,
+        ATTR_COLUMN_USER.RELATION_UPDATED_BY,
       ],
       select: {
-        [this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY)]: {
+        created_by: {
           id: true,
-          firstName: true,
-          lastName: true,
+          first_name: true,
+          last_name: true,
         },
-        [this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY)]: {
+        updated_by: {
           id: true,
-          firstName: true,
-          lastName: true,
+          first_name: true,
+          last_name: true,
         },
       },
     });
@@ -87,9 +87,9 @@ export class UserService extends BaseService {
     try {
       const hash = bcrypt.hashSync(data.password, 12);
       const user = queryRunner.manager.create(User, {
-        userName: data.username.toUpperCase(),
-        firstName: data.username,
-        lastName: data.username,
+        username: data.username.toUpperCase(),
+        first_name: data.firstName?.toUpperCase(),
+        last_name: data.lastName?.toUpperCase(),
         email: data.email.toLowerCase(),
         password: hash,
       });
@@ -99,19 +99,66 @@ export class UserService extends BaseService {
       return await this.userRepository.findOne({
         where: { id: user.id },
         relations: [
-          this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY),
-          this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY),
+          ATTR_COLUMN_USER.RELATION_CREATED_BY,
+          ATTR_COLUMN_USER.RELATION_UPDATED_BY,
         ],
         select: {
-          [this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_CREATED_BY)]: {
+          created_by: {
             id: true,
-            firstName: true,
-            lastName: true,
+            first_name: true,
+            last_name: true,
           },
-          [this.snakeToCamel(ATTR_COLUMN_USER.ATTR_RELATION_UPDATED_BY)]: {
+          updated_by: {
             id: true,
-            firstName: true,
-            lastName: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+      });
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async update(id: number, data: UpdateUser) {
+    const userData = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    const queryRunner =
+      this.userRepository.manager.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const user = queryRunner.manager.create(User, {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email.toLowerCase(),
+      });
+      await queryRunner.manager.save(user);
+
+      await queryRunner.commitTransaction();
+      return await this.userRepository.findOne({
+        where: { id: user.id },
+        relations: [
+          ATTR_COLUMN_USER.RELATION_CREATED_BY,
+          ATTR_COLUMN_USER.RELATION_UPDATED_BY,
+        ],
+        select: {
+          created_by: {
+            id: true,
+            first_name: true,
+            last_name: true,
+          },
+          updated_by: {
+            id: true,
+            first_name: true,
+            last_name: true,
           },
         },
       });

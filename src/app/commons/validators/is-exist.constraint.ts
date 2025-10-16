@@ -5,25 +5,27 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
+import { decodedID } from '../utils/hashId.util';
 
 @ValidatorConstraint({ name: 'IsExist', async: true })
 @Injectable()
 export class IsExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
   async validate(
     value: number | string,
     args: ValidationArguments,
   ): Promise<boolean> {
-    const [entityClass, key = 'id'] = args.constraints as [
+    const [entityClass, key = 'id', isDecode] = args.constraints as [
       EntityTarget<ObjectLiteral>,
       string?,
+      boolean?,
     ];
-
     if (!value) return false;
-
+    console.log(value);
+    const val = isDecode && typeof value == 'string' ? decodedID(value) : value;
     const repo = this.dataSource.getRepository(entityClass);
-    const found = await repo.findOne({ where: { [key]: value } });
+    const found = await repo.findOne({ where: { [key]: val } });
 
     return !!found;
   }

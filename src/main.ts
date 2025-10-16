@@ -1,9 +1,11 @@
 import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app/http/app.module';
+import { AppModule } from './app.module';
 // import { ConfigModule } from '@nestjs/config';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
+import { CustomValidationPipe } from './app/commons/pipes/validation.pipe';
+import { RequestContext } from './app/commons/contexts/request.context';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
@@ -11,15 +13,20 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.use((req, res, next) => {
+    RequestContext.setCurrentRequest(req);
+    next();
+  });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: false,
-      transform: true,
-    }),
-  );
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.useGlobalPipes(new CustomValidationPipe());
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     forbidNonWhitelisted: false,
+  //     transform: true,
+  //   }),
+  // );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
