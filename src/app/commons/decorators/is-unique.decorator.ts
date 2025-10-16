@@ -5,7 +5,9 @@ import { IsUniqueConstraint } from '../validators/is-unique.constraint';
 export function isUnique(
   entity: EntityTarget<ObjectLiteral>,
   column: string = 'id',
-  exceptId: string | undefined = undefined,
+  columnPK: string | number | undefined = undefined,
+  paramName: string | number | undefined = undefined,
+  exclude: boolean = false,
   validationOptions?: ValidationOptions,
 ) {
   return function (object: object, propertyName: string) {
@@ -14,7 +16,7 @@ export function isUnique(
       target: object.constructor,
       propertyName,
       options: validationOptions,
-      constraints: [entity, column, exceptId],
+      constraints: [entity, column, exclude, columnPK, paramName],
       validator: IsUniqueConstraint,
     });
   };

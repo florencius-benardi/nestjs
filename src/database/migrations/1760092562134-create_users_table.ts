@@ -64,6 +64,13 @@ export class CreateUsersTable1760092562134 implements MigrationInterface {
             default: 1,
           },
           {
+            name: ATTR_COLUMN_USER.INT_COUNT_WRONG_PASS,
+            type: 'mediumint',
+            isNullable: true,
+            unsigned: true,
+            default: null,
+          },
+          {
             name: ATTR_COLUMN_USER.CHAR_CONFIRMATION_CODE,
             type: 'varchar',
             length: '225',

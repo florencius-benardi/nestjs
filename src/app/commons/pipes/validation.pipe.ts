@@ -45,7 +45,7 @@ export class CustomValidationPipe extends ValidationPipe {
       }
       return new UnprocessableEntityException({
         status: false,
-        error: messageBag,
+        errors: messageBag,
         message: 'Validation error.',
       });
     };
@@ -63,7 +63,7 @@ export class CustomValidationPipe extends ValidationPipe {
 
         throw new BadRequestException({
           status: false,
-          error: flatMessages,
+          errors: flatMessages,
           message: 'Validation error.',
         });
       }

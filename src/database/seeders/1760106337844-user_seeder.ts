@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import {
   ATTR_COLUMN_USER,
@@ -10,11 +11,12 @@ export class UserSeeder1760106337844 implements MigrationInterface {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const hash = bcrypt.hashSync('data.password', 12);
       const userData: Partial<User> = {
         username: 'ADMIN',
         email: 'admin@localhost.com',
         first_name: 'administrator',
-        password: 'administrator',
+        password: hash,
         status: 1,
         created_by_id: 1,
         updated_by_id: 1,

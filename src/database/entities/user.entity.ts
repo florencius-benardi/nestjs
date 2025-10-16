@@ -25,6 +25,7 @@ export const ATTR_COLUMN_USER = {
   CHAR_CONFIRMATION_CODE: 'confirmation_code',
   CHAR_TOKEN: 'token',
   INT_ID: 'id',
+  INT_COUNT_WRONG_PASS: 'wrong_pass',
   INT_STATUS: 'status',
   INT_CREATED_BY: 'created_by_id',
   INT_UPDATED_BY: 'updated_by_id',
@@ -104,6 +105,16 @@ export class User {
     unsigned: true,
   })
   [ATTR_COLUMN_USER.INT_STATUS]: number | null;
+
+  @Expose({ name: ATTR_COLUMN_USER.INT_COUNT_WRONG_PASS })
+  @Column({
+    name: ATTR_COLUMN_USER.INT_COUNT_WRONG_PASS,
+    default: null,
+    nullable: true,
+    type: 'mediumint',
+    unsigned: true,
+  })
+  [ATTR_COLUMN_USER.INT_COUNT_WRONG_PASS]: number | null;
 
   @Expose({ name: ATTR_COLUMN_USER.INT_CREATED_BY })
   @Column({

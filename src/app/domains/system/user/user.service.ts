@@ -124,10 +124,6 @@ export class UserService extends BaseService {
   }
 
   async update(id: number, data: UpdateUser) {
-    const userData = await this.userRepository.findOne({
-      where: { id },
-    });
-
     const queryRunner =
       this.userRepository.manager.connection.createQueryRunner();
 
@@ -135,16 +131,18 @@ export class UserService extends BaseService {
     await queryRunner.startTransaction();
 
     try {
-      const user = queryRunner.manager.create(User, {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email.toLowerCase(),
-      });
-      await queryRunner.manager.save(user);
+      await this.userRepository.update(
+        { id },
+        {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email.toLowerCase(),
+        },
+      );
 
       await queryRunner.commitTransaction();
       return await this.userRepository.findOne({
-        where: { id: user.id },
+        where: { id: id },
         relations: [
           ATTR_COLUMN_USER.RELATION_CREATED_BY,
           ATTR_COLUMN_USER.RELATION_UPDATED_BY,

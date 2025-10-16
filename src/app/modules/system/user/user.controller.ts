@@ -7,15 +7,12 @@ import {
   Post,
   Put,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ReadUser, ReadUsers, StoreUser, UpdateUser } from './user.validator';
 import { UserService } from '../../../domains/system/user/user.service';
 import { buildPaginationResponse } from '../../../commons/utils/pagination.util';
 import { buildResponse } from '../../../commons/utils/response.util';
-import { CustomValidationPipe } from '../../../commons/pipes/validation.pipe';
-import { decodedID, encodedID } from '../../../commons/utils/hashId.util';
+import { decodedID } from '../../../commons/utils/hashId.util';
 
 @Controller('user')
 export class UserController {
@@ -51,7 +48,7 @@ export class UserController {
 
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  async update(@Param('id') req: ReadUser, @Body() request: UpdateUser) {
+  async update(@Param() req: ReadUser, @Body() request: UpdateUser) {
     const id = typeof req.user == 'number' ? req.user : decodedID(req.user);
     const result = await this.userService.update(id, request);
     return buildResponse(result, true, 'Update user success.');

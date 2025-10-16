@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './configs/typeorm.config';
-// import { UserService } from './app/domains/system/user/user.service';
-// import { UserController } from './app/modules/system/user/user.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './app/modules/system/user/user.module';
 import { ValidationModule } from './app/modules/base/base.module';
+import { AuthModule } from './app/modules/system/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,8 +16,7 @@ import { ValidationModule } from './app/modules/base/base.module';
     }),
     ValidationModule,
     UserModule,
+    AuthModule,
   ],
-  // controllers: [UserController],
-  // providers: [UserService],
 })
 export class AppModule {}
