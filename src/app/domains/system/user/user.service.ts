@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   ATTR_COLUMN_USER,
-  User,
+  Users,
 } from '../../../../database/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
@@ -12,12 +12,13 @@ import {
   UpdateUser,
 } from '../../../modules/system/user/user.validator';
 import { BaseService } from '../../base.service';
+import { MAIN } from '../../../../configs/typeorm.config';
 
 @Injectable()
 export class UserService extends BaseService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Users, MAIN)
+    private readonly userRepository: Repository<Users>,
   ) {
     super();
   }
@@ -86,7 +87,7 @@ export class UserService extends BaseService {
 
     try {
       const hash = bcrypt.hashSync(data.password, 12);
-      const user = queryRunner.manager.create(User, {
+      const user = queryRunner.manager.create(Users, {
         username: data.username.toUpperCase(),
         first_name: data.firstName?.toUpperCase(),
         last_name: data.lastName?.toUpperCase(),

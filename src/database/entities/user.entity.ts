@@ -5,12 +5,8 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToOne,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { encodedID } from '../../app/commons/utils/hashId.util';
 import { Expose } from 'class-transformer';
@@ -40,7 +36,7 @@ export const ATTR_COLUMN_USER = {
 @Entity({ name: ATTR_TABLE_USER })
 // @Unique(`UK_username`, [ATTR_COLUMN_USER.CHAR_USERNAME])
 // @Unique(`UK_email`, [ATTR_COLUMN_USER.CHAR_EMAIL])
-export class User {
+export class Users {
   @Expose({ name: ATTR_COLUMN_USER.INT_ID })
   @PrimaryGeneratedColumn({
     name: ATTR_COLUMN_USER.INT_ID,
@@ -168,22 +164,22 @@ export class User {
   // RELATION
   // 👇 Relation field (the single user who updated this record)
   @Expose({ name: ATTR_COLUMN_USER.RELATION_CREATED_BY })
-  @ManyToOne(() => User, {
+  @ManyToOne(() => Users, {
     nullable: true,
   })
   @JoinColumn({
     name: ATTR_COLUMN_USER.INT_CREATED_BY,
     referencedColumnName: ATTR_COLUMN_USER.INT_ID,
   })
-  [ATTR_COLUMN_USER.RELATION_CREATED_BY]?: User;
+  [ATTR_COLUMN_USER.RELATION_CREATED_BY]?: Users;
 
   @Expose({ name: ATTR_COLUMN_USER.RELATION_UPDATED_BY })
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => Users, { nullable: true })
   @JoinColumn({
     name: ATTR_COLUMN_USER.INT_UPDATED_BY,
     referencedColumnName: ATTR_COLUMN_USER.INT_ID,
   })
-  [ATTR_COLUMN_USER.RELATION_UPDATED_BY]?: User;
+  [ATTR_COLUMN_USER.RELATION_UPDATED_BY]?: Users;
 
   // @OneToOne(() => User, (user) => user.createdUsers, { nullable: true })
   // @JoinColumn({ name: ATTR_COLUMN_USER.INT_CREATED_BY })

@@ -14,6 +14,10 @@ export class BaseDatatable {
   @Min(1)
   length?: number = 10;
 
+  @Expose({ name: 'q' })
+  @IsOptional()
+  q?: string;
+
   @Expose({ name: 'order_by[]' })
   @Transform(({ value }) => {
     if (Array.isArray(value)) return value;

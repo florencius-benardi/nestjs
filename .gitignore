@@ -7,3 +7,5 @@ temp/
 .env
 dist/
 *.db
+src/storages/keys/jwtRS256.key
+src/storages/keys/jwtRS256.key.pub

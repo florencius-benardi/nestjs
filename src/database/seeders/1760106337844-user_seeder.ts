@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import {
   ATTR_COLUMN_USER,
   ATTR_TABLE_USER,
-  User,
+  Users,
 } from '../entities/user.entity';
 
 export class UserSeeder1760106337844 implements MigrationInterface {
@@ -12,7 +12,7 @@ export class UserSeeder1760106337844 implements MigrationInterface {
     await queryRunner.startTransaction();
     try {
       const hash = bcrypt.hashSync('data.password', 12);
-      const userData: Partial<User> = {
+      const userData: Partial<Users> = {
         username: 'ADMIN',
         email: 'admin@localhost.com',
         first_name: 'administrator',
@@ -22,7 +22,7 @@ export class UserSeeder1760106337844 implements MigrationInterface {
         updated_by_id: 1,
       };
 
-      await queryRunner.manager.insert(User, [userData]);
+      await queryRunner.manager.insert(Users, [userData]);
 
       await queryRunner.commitTransaction();
     } catch (error) {

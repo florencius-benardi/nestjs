@@ -44,6 +44,11 @@ export class CreateTokenTable1760608272863 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: ATTR_COLUMN_TOKEN.DATETIME_EXPIRES,
+            type: 'timestamptz',
+            isNullable: true,
+          },
+          {
             name: ATTR_COLUMN_TOKEN.DATETIME_CREATED,
             type: 'timestamptz',
             isNullable: true,

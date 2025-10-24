@@ -6,12 +6,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { CustomValidationPipe } from './app/commons/pipes/validation.pipe';
 import { RequestContext } from './app/commons/contexts/request.context';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestApplication>(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
     logger: ['error', 'warn'],
   });
+
+  app.set('trust proxy', 1);
 
   app.use((req, res, next) => {
     RequestContext.setCurrentRequest(req);

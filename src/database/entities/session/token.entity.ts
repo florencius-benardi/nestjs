@@ -8,18 +8,19 @@ import { Expose } from 'class-transformer';
 
 export const ATTR_TABLE_TOKEN = 'personal_access_token';
 export const ATTR_COLUMN_TOKEN = {
-  CHAR_NAME: 'username',
+  CHAR_NAME: 'name',
   CHAR_TYPE: 'type',
   CHAR_TOKEN: 'token',
   CHAR_ID: 'uuid',
   JSON_ABILITIES: 'abilities',
   INT_USER: 'grant_to_id',
+  DATETIME_EXPIRES: 'expires_at',
   DATETIME_CREATED: 'created_at',
   DATETIME_UPDATED: 'updated_at',
 } as const;
 
 @Entity({ name: ATTR_TABLE_TOKEN })
-export class User {
+export class PersonalAccessToken {
   @Expose({ name: ATTR_COLUMN_TOKEN.CHAR_ID })
   @PrimaryGeneratedColumn('uuid')
   [ATTR_COLUMN_TOKEN.CHAR_ID]: string;
@@ -68,6 +69,15 @@ export class User {
     nullable: true,
   })
   [ATTR_COLUMN_TOKEN.JSON_ABILITIES]: JSON | null;
+
+  @Expose({ name: ATTR_COLUMN_TOKEN.DATETIME_EXPIRES })
+  @Column({
+    name: ATTR_COLUMN_TOKEN.DATETIME_EXPIRES,
+    default: null,
+    type: process.env.DB_TYPE === 'postgres' ? 'timestamptz' : 'datetime',
+    nullable: true,
+  })
+  [ATTR_COLUMN_TOKEN.DATETIME_EXPIRES]?: Date;
 
   @Expose({ name: ATTR_COLUMN_TOKEN.DATETIME_CREATED })
   @CreateDateColumn({

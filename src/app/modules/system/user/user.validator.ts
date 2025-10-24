@@ -3,7 +3,7 @@ import { Expose, Transform } from 'class-transformer';
 import { BaseDatatable } from '../../base/base.validator';
 import {
   ATTR_COLUMN_USER,
-  User,
+  Users,
 } from '../../../../database/entities/user.entity';
 import { isUnique } from '../../../commons/decorators/is-unique.decorator';
 import { ChangePasswordUser } from '../../../commons/validators/match-password.constraint';
@@ -26,7 +26,7 @@ export class ReadUser {
   @Transform(({ value }: { value: string }): string | number | undefined =>
     decodedID(value),
   )
-  @isExist(User, ATTR_COLUMN_USER.INT_ID, true, {
+  @isExist(Users, ATTR_COLUMN_USER.INT_ID, true, {
     message: 'The user does not exist.',
   })
   user: number | string;
@@ -38,7 +38,7 @@ export class StoreUser extends ChangePasswordUser {
   )
   @Expose({ name: 'username' })
   @isUnique(
-    User,
+    Users,
     ATTR_COLUMN_USER.CHAR_USERNAME,
     ATTR_COLUMN_USER.INT_ID,
     'id',
@@ -56,9 +56,16 @@ export class StoreUser extends ChangePasswordUser {
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   @Expose({ name: 'email' })
-  @isUnique(User, ATTR_COLUMN_USER.CHAR_USERNAME, undefined, undefined, false, {
-    message: 'Email already exist.',
-  })
+  @isUnique(
+    Users,
+    ATTR_COLUMN_USER.CHAR_USERNAME,
+    undefined,
+    undefined,
+    false,
+    {
+      message: 'Email already exist.',
+    },
+  )
   @IsEmail()
   email: string;
 
@@ -84,7 +91,7 @@ export class UpdateUser {
 
   @Expose({ name: 'email' })
   @isUnique(
-    User,
+    Users,
     ATTR_COLUMN_USER.CHAR_USERNAME,
     ATTR_COLUMN_USER.INT_ID,
     'id',

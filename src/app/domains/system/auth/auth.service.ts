@@ -1,20 +1,31 @@
+import crypto from 'node:crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { BaseService } from '../../base.service';
 import { Repository } from 'typeorm';
 import {
   ATTR_COLUMN_USER,
-  User,
+  Users,
 } from '../../../../database/entities/user.entity';
-import { LoginUser } from '../../../modules/system/auth/auth.validator';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isEmail } from '../../../commons/utils/validate.util';
 import { compare } from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+import { MAIN, SESSION } from '../../../../configs/typeorm.config';
+import {
+  ATTR_COLUMN_TOKEN,
+  PersonalAccessToken,
+} from '../../../../database/entities/session/token.entity';
+import { LoginUser } from '../../../modules/system/auth/auth.validator';
+import { addNowDayEndOfDay } from '../../../commons/utils/manipulate.util';
 
 @Injectable()
 export class AuthService extends BaseService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Users, MAIN)
+    private readonly userRepository: Repository<Users>,
+    @InjectRepository(PersonalAccessToken, SESSION)
+    private readonly tokenRepository: Repository<PersonalAccessToken>,
+    private readonly jwtService: JwtService,
   ) {
     super();
   }
@@ -34,7 +45,7 @@ export class AuthService extends BaseService {
           ATTR_COLUMN_USER.INT_COUNT_WRONG_PASS,
         ],
       })
-      .then(async (result): Promise<boolean | User> => {
+      .then(async (result): Promise<Users> => {
         if (!result)
           throw new UnauthorizedException({
             status: false,
@@ -59,15 +70,47 @@ export class AuthService extends BaseService {
             message: 'Input the correct password.',
           });
         }
+
         return result;
       });
 
-    // const results = await Promise.all([
-    //   (): Promise<string> =>
-    //     new Promise((resolve) => setTimeout(() => resolve('API 1 data'), 1000)),
-    //   (): Promise<string> =>
-    //     new Promise((resolve) => setTimeout(() => resolve('API 2 data'), 1000)),
-    // ]);
-    console.log(result);
+    const queryRunner =
+      this.tokenRepository.manager.connection.createQueryRunner();
+
+    const tokenText = crypto.randomBytes(32).toString('hex');
+
+    const createdDay = addNowDayEndOfDay().toString();
+    const token = queryRunner.manager.create(PersonalAccessToken, {
+      token: tokenText,
+      grant_to_id: result.id,
+      name: 'user-token',
+      type: '1',
+      expires_at: createdDay,
+    });
+
+    await queryRunner.manager.save(token);
+
+    const refreshToken = await this.jwtService.signAsync(
+      {
+        token: token[ATTR_COLUMN_TOKEN.CHAR_TOKEN],
+        uuid: token[ATTR_COLUMN_TOKEN.CHAR_ID],
+        user: token[ATTR_COLUMN_TOKEN.INT_USER],
+      },
+      { expiresIn: '30d' },
+    );
+
+    const accessToken = await this.jwtService.signAsync(
+      {
+        token: token[ATTR_COLUMN_TOKEN.CHAR_TOKEN],
+        user: token[ATTR_COLUMN_TOKEN.INT_USER],
+      },
+      { expiresIn: '1h' },
+    );
+
+    return {
+      refresh_token: refreshToken,
+      access_token: accessToken,
+      create_at: createdDay,
+    };
   }
 }

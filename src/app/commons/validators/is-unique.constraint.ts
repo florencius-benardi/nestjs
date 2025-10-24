@@ -6,10 +6,13 @@ import {
 } from 'class-validator';
 import { DataSource, EntityTarget, Not, ObjectLiteral } from 'typeorm';
 import { RequestContext } from '../contexts/request.context';
+import { MAIN } from '../../../configs/typeorm.config';
 
 @ValidatorConstraint({ name: 'IsUnique', async: true })
 export class IsUniqueConstraint implements ValidatorConstraintInterface {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource(MAIN) private readonly dataSource: DataSource,
+  ) {}
 
   async validate(
     value: number | string,

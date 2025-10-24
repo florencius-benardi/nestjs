@@ -6,11 +6,15 @@ import {
 } from 'class-validator';
 import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
 import { decodedID } from '../utils/hashId.util';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { MAIN } from '../../../configs/typeorm.config';
 
 @ValidatorConstraint({ name: 'IsExist', async: true })
 @Injectable()
 export class IsExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource(MAIN) private readonly dataSource: DataSource,
+  ) {}
 
   async validate(
     value: number | string | undefined,
