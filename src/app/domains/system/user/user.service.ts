@@ -78,7 +78,7 @@ export class UserService extends BaseService {
     });
   }
 
-  async store(data: StoreUser) {
+  async store(data: StoreUser, userId: number) {
     const queryRunner =
       this.userRepository.manager.connection.createQueryRunner();
 
@@ -93,6 +93,7 @@ export class UserService extends BaseService {
         last_name: data.lastName?.toUpperCase(),
         email: data.email.toLowerCase(),
         password: hash,
+        created_by_id: userId,
       });
       await queryRunner.manager.save(user);
 
@@ -124,7 +125,7 @@ export class UserService extends BaseService {
     }
   }
 
-  async update(id: number, data: UpdateUser) {
+  async update(id: number, data: UpdateUser, userId: number) {
     const queryRunner =
       this.userRepository.manager.connection.createQueryRunner();
 
@@ -138,6 +139,7 @@ export class UserService extends BaseService {
           first_name: data.firstName,
           last_name: data.lastName,
           email: data.email.toLowerCase(),
+          updated_by_id: userId,
         },
       );
 

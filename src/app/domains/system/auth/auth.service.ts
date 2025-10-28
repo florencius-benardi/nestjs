@@ -13,19 +13,24 @@ import { JwtService } from '@nestjs/jwt';
 import { MAIN, SESSION } from '../../../../configs/typeorm.config';
 import {
   ATTR_COLUMN_TOKEN,
+  ATTR_TYPE_TOKEN,
   PersonalAccessToken,
 } from '../../../../database/entities/session/token.entity';
 import { LoginUser } from '../../../modules/system/auth/auth.validator';
-import { addNowDayEndOfDay } from '../../../commons/utils/manipulate.util';
+import {
+  addNowDay,
+  addNowDayEndOfDay,
+} from '../../../commons/utils/manipulate.util';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService extends BaseService {
   constructor(
+    private readonly jwtService: JwtService,
     @InjectRepository(Users, MAIN)
     private readonly userRepository: Repository<Users>,
     @InjectRepository(PersonalAccessToken, SESSION)
     private readonly tokenRepository: Repository<PersonalAccessToken>,
-    private readonly jwtService: JwtService,
   ) {
     super();
   }
@@ -79,13 +84,14 @@ export class AuthService extends BaseService {
 
     const tokenText = crypto.randomBytes(32).toString('hex');
 
-    const createdDay = addNowDayEndOfDay().toString();
+    const createdDay = dayjs().format();
+    const expiresAt = addNowDayEndOfDay().toString();
     const token = queryRunner.manager.create(PersonalAccessToken, {
       token: tokenText,
       grant_to_id: result.id,
       name: 'user-token',
-      type: '1',
-      expires_at: createdDay,
+      type: ATTR_TYPE_TOKEN.USER.toString(),
+      expires_at: expiresAt,
     });
 
     await queryRunner.manager.save(token);
@@ -96,21 +102,56 @@ export class AuthService extends BaseService {
         uuid: token[ATTR_COLUMN_TOKEN.CHAR_ID],
         user: token[ATTR_COLUMN_TOKEN.INT_USER],
       },
-      { expiresIn: '30d' },
+      {
+        expiresIn: '30d',
+      },
     );
 
     const accessToken = await this.jwtService.signAsync(
       {
         token: token[ATTR_COLUMN_TOKEN.CHAR_TOKEN],
         user: token[ATTR_COLUMN_TOKEN.INT_USER],
+        type: ATTR_TYPE_TOKEN.USER,
       },
-      { expiresIn: '1h' },
+      {
+        expiresIn: '1h',
+        secret: process.env.JWT_SECRET,
+      },
     );
 
     return {
       refresh_token: refreshToken,
       access_token: accessToken,
-      create_at: createdDay,
+      created_at: createdDay,
+    };
+  }
+
+  async logout(uuid: string) {
+    await this.tokenRepository
+      .findOneBy({
+        [ATTR_COLUMN_TOKEN.CHAR_ID]: uuid,
+      })
+      .then(async (result): Promise<void> => {
+        if (result) await this.tokenRepository.remove(result);
+      });
+  }
+
+  async refresh(token: string, user: number) {
+    const accessToken = await this.jwtService.signAsync(
+      {
+        token: token,
+        user: user,
+        type: ATTR_TYPE_TOKEN.USER,
+      },
+      {
+        expiresIn: '1h',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+    const createdDay = dayjs().format();
+    return {
+      access_token: accessToken,
+      created_at: createdDay,
     };
   }
 }

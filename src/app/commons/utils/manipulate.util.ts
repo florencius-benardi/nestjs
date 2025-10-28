@@ -17,3 +17,11 @@ export function addNowDayEndOfDay(): string {
     .utc(true)
     .toISOString();
 }
+
+export function addNowDay(): string {
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
+  const day = dayjs();
+  return day.utcOffset('+07:00').utc(true).toISOString();
+}

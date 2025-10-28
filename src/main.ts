@@ -7,6 +7,7 @@ import { useContainer } from 'class-validator';
 import { CustomValidationPipe } from './app/commons/pipes/validation.pipe';
 import { RequestContext } from './app/commons/contexts/request.context';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { AllExceptionsFilter } from './app/commons/filters/catch.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,6 +24,7 @@ async function bootstrap() {
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalPipes(new CustomValidationPipe());
+  app.useGlobalFilters(new AllExceptionsFilter());
   // app.useGlobalPipes(
   //   new ValidationPipe({
   //     whitelist: true,

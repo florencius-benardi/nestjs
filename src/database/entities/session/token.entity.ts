@@ -19,6 +19,11 @@ export const ATTR_COLUMN_TOKEN = {
   DATETIME_UPDATED: 'updated_at',
 } as const;
 
+export const ATTR_TYPE_TOKEN = {
+  USER: 1,
+  MEMBER: 2,
+} as const;
+
 @Entity({ name: ATTR_TABLE_TOKEN })
 export class PersonalAccessToken {
   @Expose({ name: ATTR_COLUMN_TOKEN.CHAR_ID })
