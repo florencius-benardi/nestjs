@@ -24,7 +24,6 @@ export class AbilityJWTAuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user: JWTUserInterface = request.user;
-
     if (!user || !user.abilities) {
       throw new ForbiddenException({
         status: false,

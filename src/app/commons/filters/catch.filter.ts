@@ -27,6 +27,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ? res
           : (res as Record<string, any>)?.message || message;
     } else if (exception instanceof Error) {
+      console.log(exception);
       message = exception.message;
     }
 

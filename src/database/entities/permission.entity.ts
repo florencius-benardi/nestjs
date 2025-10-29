@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { encodedID } from '../../app/commons/utils/hashId.util';
@@ -18,6 +19,10 @@ import {
   ATTR_COLUMN_PERMISSION_SUB_GROUP,
   PermissionSubGroups,
 } from './permissionSubGroup.entity';
+import {
+  ATTR_COLUMN_ROLE_PERMISSION,
+  RolePermissions,
+} from './rolePermission.entity';
 
 export const ATTR_TABLE_PERMISSION = 'permissions';
 export const ATTR_COLUMN_PERMISSION = {
@@ -34,6 +39,7 @@ export const ATTR_COLUMN_PERMISSION = {
   CHAR_ENCRYPTION: 'encryption_id',
   RELATION_GROUP: 'permission_group',
   RELATION_SUB_GROUP: 'permission_sub_group',
+  RELATION_ROLE_PERMISSIONS: 'role_permissions',
 } as const;
 
 @Entity({ name: ATTR_TABLE_PERMISSION })
@@ -144,6 +150,14 @@ export class Permissions {
     referencedColumnName: ATTR_COLUMN_PERMISSION_SUB_GROUP.INT_ID,
   })
   [ATTR_COLUMN_PERMISSION.RELATION_SUB_GROUP]?: PermissionSubGroups;
+
+  @OneToMany(
+    () => RolePermissions,
+    (rolePermission) =>
+      rolePermission[ATTR_COLUMN_ROLE_PERMISSION.RELATION_PERMISSION],
+    { nullable: true },
+  )
+  [ATTR_COLUMN_PERMISSION.RELATION_ROLE_PERMISSIONS]?: RolePermissions[];
 
   @AfterLoad()
   encodeValue() {

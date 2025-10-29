@@ -20,8 +20,16 @@ import { LoginUser } from '../../../modules/system/auth/auth.validator';
 import {
   addNowDay,
   addNowDayEndOfDay,
+  pluck,
 } from '../../../commons/utils/manipulate.util';
 import dayjs from 'dayjs';
+import {
+  ATTR_COLUMN_USER_ROLE,
+  UserRoles,
+} from '../../../../database/entities/userRole.entity';
+import { ATTR_COLUMN_PERMISSION } from '../../../../database/entities/permission.entity';
+import { ATTR_COLUMN_ROLE } from '../../../../database/entities/role.entity';
+import { ATTR_COLUMN_ROLE_PERMISSION } from '../../../../database/entities/rolePermission.entity';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -29,6 +37,8 @@ export class AuthService extends BaseService {
     private readonly jwtService: JwtService,
     @InjectRepository(Users, MAIN)
     private readonly userRepository: Repository<Users>,
+    @InjectRepository(UserRoles, MAIN)
+    private readonly userRoleRepository: Repository<UserRoles>,
     @InjectRepository(PersonalAccessToken, SESSION)
     private readonly tokenRepository: Repository<PersonalAccessToken>,
   ) {
@@ -43,12 +53,27 @@ export class AuthService extends BaseService {
             ? ATTR_COLUMN_USER.CHAR_EMAIL
             : ATTR_COLUMN_USER.CHAR_USERNAME]: data.email,
         },
-        select: [
-          ATTR_COLUMN_USER.INT_ID,
-          ATTR_COLUMN_USER.INT_STATUS,
-          ATTR_COLUMN_USER.CHAR_PASSWORD,
-          ATTR_COLUMN_USER.INT_COUNT_WRONG_PASS,
-        ],
+        relations: {
+          user_roles: {
+            role: {
+              role_permissions: {
+                permission: true,
+              },
+            },
+          },
+          created_by: true,
+        },
+        select: {
+          id: true,
+          status: true,
+          password: true,
+          wrong_pass: true,
+          user_roles: {
+            id: true,
+            user_id: true,
+            role_id: true,
+          },
+        },
       })
       .then(async (result): Promise<Users> => {
         if (!result)
@@ -79,6 +104,20 @@ export class AuthService extends BaseService {
         return result;
       });
 
+    const objectPermissions = result?.[ATTR_COLUMN_USER.RELATION_USER_ROLES]
+      ?.flatMap(
+        (ur) =>
+          ur[ATTR_COLUMN_USER_ROLE.RELATION_ROLE]?.[
+            ATTR_COLUMN_ROLE.RELATION_ROLE_PERMISSIONS
+          ] ?? [],
+      )
+      .map(
+        (rp) =>
+          rp[ATTR_COLUMN_ROLE_PERMISSION.RELATION_PERMISSION]?.[
+            ATTR_COLUMN_PERMISSION.CHAR_OBJECT
+          ],
+      )
+      .filter(Boolean);
     const queryRunner =
       this.tokenRepository.manager.connection.createQueryRunner();
 
@@ -92,6 +131,7 @@ export class AuthService extends BaseService {
       name: 'user-token',
       type: ATTR_TYPE_TOKEN.USER.toString(),
       expires_at: expiresAt,
+      abilities: objectPermissions as unknown as JSON,
     });
 
     await queryRunner.manager.save(token);

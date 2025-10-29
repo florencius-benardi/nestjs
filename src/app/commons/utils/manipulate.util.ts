@@ -25,3 +25,7 @@ export function addNowDay(): string {
   const day = dayjs();
   return day.utcOffset('+07:00').utc(true).toISOString();
 }
+
+export function pluck(array: any[], key: string): any {
+  return array.map((i) => i[key]);
+}

@@ -15,21 +15,22 @@ import {
   PermissionGroups,
 } from './permissionGroup.entity';
 
-export const ATTR_TABLE_PERMISSION_GROUP = 'permission_groups';
+export const ATTR_TABLE_PERMISSION_SUB_GROUP = 'permission_sub_groups';
 export const ATTR_COLUMN_PERMISSION_SUB_GROUP = {
+  CHAR_CODE: 'code',
   CHAR_DESCRIPTION: 'description',
-  INT_ID: 'id',
-  INT_GROUP: 'permission_group_id',
-  INT_CREATED_BY: 'created_by_id',
-  INT_UPDATED_BY: 'updated_by_id',
-  DATETIME_CREATED: 'created_at',
-  DATETIME_UPDATED: 'updated_at',
-  DATETIME_DELETED: 'deleted_at',
   CHAR_ENCRYPTION: 'encryption_id',
+  DATETIME_CREATED: 'created_at',
+  DATETIME_DELETED: 'deleted_at',
+  DATETIME_UPDATED: 'updated_at',
+  INT_CREATED_BY: 'created_by_id',
+  INT_GROUP: 'permission_group_id',
+  INT_ID: 'id',
+  INT_UPDATED_BY: 'updated_by_id',
   RELATION_GROUP: 'permission_group',
 } as const;
 
-@Entity({ name: ATTR_TABLE_PERMISSION_GROUP })
+@Entity({ name: ATTR_TABLE_PERMISSION_SUB_GROUP })
 export class PermissionSubGroups {
   @Expose({ name: ATTR_COLUMN_PERMISSION_SUB_GROUP.INT_ID })
   @PrimaryGeneratedColumn({
@@ -38,6 +39,15 @@ export class PermissionSubGroups {
     unsigned: true,
   })
   [ATTR_COLUMN_PERMISSION_SUB_GROUP.INT_ID]: number;
+
+  @Expose({ name: ATTR_COLUMN_PERMISSION_SUB_GROUP.CHAR_CODE })
+  @Column({
+    name: ATTR_COLUMN_PERMISSION_SUB_GROUP.CHAR_CODE,
+    length: 10,
+    update: false,
+    unique: true,
+  })
+  [ATTR_COLUMN_PERMISSION_SUB_GROUP.CHAR_CODE]: string;
 
   @Expose({ name: ATTR_COLUMN_PERMISSION_SUB_GROUP.INT_GROUP })
   @Column({

@@ -13,11 +13,28 @@ import { PassportModule } from '@nestjs/passport';
 import { Algorithm } from 'jsonwebtoken';
 import 'dotenv/config';
 import { AccessJWTStrategy } from '../../../../configs/auth/strategies/access.strategy';
+import { UserRoles } from '../../../../database/entities/userRole.entity';
+import { RolePermissions } from '../../../../database/entities/rolePermission.entity';
+import { PermissionSubGroups } from '../../../../database/entities/permissionSubGroup.entity';
+import { PermissionGroups } from '../../../../database/entities/permissionGroup.entity';
+import { Permissions } from '../../../../database/entities/permission.entity';
+import { Roles } from '../../../../database/entities/role.entity';
 
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([Users], MAIN),
+    TypeOrmModule.forFeature(
+      [
+        Users,
+        Roles,
+        UserRoles,
+        RolePermissions,
+        Permissions,
+        PermissionGroups,
+        PermissionSubGroups,
+      ],
+      MAIN,
+    ),
     TypeOrmModule.forFeature([PersonalAccessToken], SESSION),
     PassportModule.registerAsync({
       useFactory: () => ({

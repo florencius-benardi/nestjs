@@ -5,9 +5,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
-import { Roles } from './role.entity';
+import { ATTR_COLUMN_ROLE, Roles } from './role.entity';
 import { ATTR_COLUMN_PERMISSION, Permissions } from './permission.entity';
 
 export const ATTR_TABLE_ROLE_PERMISSION = 'role_permissions';
@@ -26,7 +28,19 @@ export const ATTR_COLUMN_ROLE_PERMISSION = {
 } as const;
 
 @Entity({ name: ATTR_TABLE_ROLE_PERMISSION })
+@Unique([
+  ATTR_COLUMN_ROLE_PERMISSION.INT_ROLE,
+  ATTR_COLUMN_ROLE_PERMISSION.INT_PERMISSION,
+])
 export class RolePermissions {
+  @Expose({ name: ATTR_COLUMN_ROLE_PERMISSION.INT_ID })
+  @PrimaryGeneratedColumn({
+    name: ATTR_COLUMN_ROLE_PERMISSION.INT_ID,
+    type: process.env.DB_TYPE === 'postgres' ? 'bigint' : 'int',
+    unsigned: true,
+  })
+  [ATTR_COLUMN_ROLE_PERMISSION.INT_ID]: number;
+
   @Expose({ name: ATTR_COLUMN_ROLE_PERMISSION.INT_ROLE })
   @Column({
     name: ATTR_COLUMN_ROLE_PERMISSION.INT_ROLE,
@@ -90,22 +104,31 @@ export class RolePermissions {
   [ATTR_COLUMN_ROLE_PERMISSION.CHAR_ENCRYPTION]?: string;
 
   @Expose({ name: ATTR_COLUMN_ROLE_PERMISSION.RELATION_ROLE })
-  @ManyToOne(() => Roles, {
-    nullable: true,
-  })
+  @ManyToOne(
+    () => Roles,
+    (role) => role[ATTR_COLUMN_ROLE.RELATION_ROLE_PERMISSIONS],
+    {
+      nullable: true,
+    },
+  )
   @JoinColumn({
     name: ATTR_COLUMN_ROLE_PERMISSION.INT_ROLE,
     referencedColumnName: ATTR_COLUMN_ROLE_PERMISSION.INT_ID,
   })
-  [ATTR_COLUMN_ROLE_PERMISSION.RELATION_ROLE]?: Roles;
+  [ATTR_COLUMN_ROLE_PERMISSION.RELATION_ROLE]?: Roles[];
 
   @Expose({ name: ATTR_COLUMN_ROLE_PERMISSION.INT_PERMISSION })
-  @ManyToOne(() => Permissions, {
-    nullable: true,
-  })
+  @ManyToOne(
+    () => Permissions,
+    (permission) =>
+      permission[ATTR_COLUMN_PERMISSION.RELATION_ROLE_PERMISSIONS],
+    {
+      nullable: true,
+    },
+  )
   @JoinColumn({
     name: ATTR_COLUMN_ROLE_PERMISSION.INT_PERMISSION,
-    referencedColumnName: ATTR_COLUMN_PERMISSION.INT_ID,
+    referencedColumnName: 'id',
   })
   [ATTR_COLUMN_ROLE_PERMISSION.RELATION_PERMISSION]?: Permissions;
 }

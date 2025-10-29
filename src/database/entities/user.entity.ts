@@ -6,10 +6,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { encodedID } from '../../app/commons/utils/hashId.util';
 import { Expose } from 'class-transformer';
+import { ATTR_COLUMN_USER_ROLE, UserRoles } from './userRole.entity';
 
 export const ATTR_TABLE_USER = 'users';
 export const ATTR_COLUMN_USER = {
@@ -31,6 +33,7 @@ export const ATTR_COLUMN_USER = {
   CHAR_ENCRYPTION: 'encryption_id',
   RELATION_UPDATED_BY: 'updated_by',
   RELATION_CREATED_BY: 'created_by',
+  RELATION_USER_ROLES: 'user_roles',
 } as const;
 
 @Entity({ name: ATTR_TABLE_USER })
@@ -156,13 +159,7 @@ export class Users {
   @Expose({ name: ATTR_COLUMN_USER.CHAR_ENCRYPTION })
   [ATTR_COLUMN_USER.CHAR_ENCRYPTION]?: string;
 
-  @AfterLoad()
-  encodeValue() {
-    this[ATTR_COLUMN_USER.CHAR_ENCRYPTION] = encodedID(this.id);
-  }
-
   // RELATION
-  // 👇 Relation field (the single user who updated this record)
   @Expose({ name: ATTR_COLUMN_USER.RELATION_CREATED_BY })
   @ManyToOne(() => Users, {
     nullable: true,
@@ -181,16 +178,14 @@ export class Users {
   })
   [ATTR_COLUMN_USER.RELATION_UPDATED_BY]?: Users;
 
-  // @OneToOne(() => User, (user) => user.createdUsers, { nullable: true })
-  // @JoinColumn({ name: ATTR_COLUMN_USER.INT_CREATED_BY })
-  // createdBy?: User;
+  @OneToMany(
+    () => UserRoles,
+    (userRoles) => userRoles[ATTR_COLUMN_USER_ROLE.RELATION_USER],
+  )
+  [ATTR_COLUMN_USER.RELATION_USER_ROLES]: UserRoles[];
 
-  // @OneToMany(() => User, (user) => user[ATTR_COLUMN_USER.created])
-  // usersCreated?: User[];
-
-  // @OneToMany(() => User, (user) => user.updatedBy)
-  // usersUpdated?: User[];
-
-  // @OneToMany(() => User, (user) => user.updatedBy)
-  // updatedUsers?: User[];
+  @AfterLoad()
+  encodeValue() {
+    this[ATTR_COLUMN_USER.CHAR_ENCRYPTION] = encodedID(this.id);
+  }
 }

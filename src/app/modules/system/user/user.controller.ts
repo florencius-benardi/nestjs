@@ -20,13 +20,17 @@ import { JWTUserInterface } from '../../../commons/interface/jwt.interface';
 import { ATTR_COLUMN_USER } from '../../../../database/entities/user.entity';
 import { Abilities } from '../../../commons/decorators/abilty.decorator';
 import { AbilityJWTAuthGuard } from '../../../../configs/auth/guards/ability.guard';
+import { PERMISSION_CONS } from '../../../commons/constants/permission.constant';
+
+const { USER_MANAGEMENT_VIEW, USER_MANAGEMENT_CREATE, USER_MANAGEMENT_UPDATE } =
+  PERMISSION_CONS;
 
 @UseGuards(AccessJWTAuthGuard, AbilityJWTAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Abilities('user:view')
+  @Abilities(USER_MANAGEMENT_VIEW)
   @Get()
   @Header('Content-Type', 'application/json')
   async findAll(@Query() request: ReadUsers, @Req() req: any) {
@@ -40,6 +44,7 @@ export class UserController {
     );
   }
 
+  @Abilities(USER_MANAGEMENT_VIEW)
   @Get(':id')
   @Header('Content-Type', 'application/json')
   async find(@Param() params: ReadUser, @Req() req: any) {
@@ -49,6 +54,7 @@ export class UserController {
     return buildResponse(result, true, 'Fetch user success.');
   }
 
+  @Abilities(USER_MANAGEMENT_CREATE)
   @Post()
   @Header('Content-Type', 'application/json')
   async store(@Body() body: StoreUser, @Req() req: any) {
@@ -61,6 +67,7 @@ export class UserController {
     return buildResponse(result, true, 'Create user success.');
   }
 
+  @Abilities(USER_MANAGEMENT_UPDATE)
   @Put(':id')
   @Header('Content-Type', 'application/json')
   async update(

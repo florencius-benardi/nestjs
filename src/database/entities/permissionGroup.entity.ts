@@ -11,6 +11,7 @@ import { Expose } from 'class-transformer';
 
 export const ATTR_TABLE_PERMISSION_GROUP = 'permission_groups';
 export const ATTR_COLUMN_PERMISSION_GROUP = {
+  CHAR_CODE: 'code',
   CHAR_DESCRIPTION: 'description',
   INT_ID: 'id',
   INT_CREATED_BY: 'created_by_id',
@@ -31,12 +32,20 @@ export class PermissionGroups {
   })
   [ATTR_COLUMN_PERMISSION_GROUP.INT_ID]: number;
 
+  @Expose({ name: ATTR_COLUMN_PERMISSION_GROUP.CHAR_CODE })
+  @Column({
+    name: ATTR_COLUMN_PERMISSION_GROUP.CHAR_CODE,
+    length: 10,
+    update: false,
+    unique: true,
+  })
+  [ATTR_COLUMN_PERMISSION_GROUP.CHAR_CODE]: string;
+
   @Expose({ name: ATTR_COLUMN_PERMISSION_GROUP.CHAR_DESCRIPTION })
   @Column({
     name: ATTR_COLUMN_PERMISSION_GROUP.CHAR_DESCRIPTION,
     length: 50,
     update: false,
-    unique: true,
   })
   [ATTR_COLUMN_PERMISSION_GROUP.CHAR_DESCRIPTION]: string;
 
