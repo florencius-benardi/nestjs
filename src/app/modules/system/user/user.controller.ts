@@ -33,13 +33,13 @@ export class UserController {
   @Abilities(USER_MANAGEMENT_VIEW)
   @Get()
   @Header('Content-Type', 'application/json')
-  async findAll(@Query() request: ReadUsers, @Req() req: any) {
-    const result = await this.userService.reads(request);
+  async findAll(@Query() query: ReadUsers) {
+    const result = await this.userService.reads(query);
     return buildPaginationResponse(
       result.data,
       result.count,
-      request.start,
-      request.length,
+      query.start,
+      query.length,
       'Fetch user success',
     );
   }
@@ -47,7 +47,7 @@ export class UserController {
   @Abilities(USER_MANAGEMENT_VIEW)
   @Get(':id')
   @Header('Content-Type', 'application/json')
-  async find(@Param() params: ReadUser, @Req() req: any) {
+  async find(@Param() params: ReadUser) {
     const id =
       typeof params.user == 'number' ? params.user : decodedID(params.user);
     const result = await this.userService.read(id);

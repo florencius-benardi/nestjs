@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { encodedID } from '../../app/commons/utils/hashId.util';
@@ -14,6 +15,7 @@ import {
   ATTR_COLUMN_PERMISSION_GROUP,
   PermissionGroups,
 } from './permissionGroup.entity';
+import { ATTR_COLUMN_PERMISSION, Permissions } from './permission.entity';
 
 export const ATTR_TABLE_PERMISSION_SUB_GROUP = 'permission_sub_groups';
 export const ATTR_COLUMN_PERMISSION_SUB_GROUP = {
@@ -28,6 +30,7 @@ export const ATTR_COLUMN_PERMISSION_SUB_GROUP = {
   INT_ID: 'id',
   INT_UPDATED_BY: 'updated_by_id',
   RELATION_GROUP: 'permission_group',
+  RELATION_PERMISSION: 'permission',
 } as const;
 
 @Entity({ name: ATTR_TABLE_PERMISSION_SUB_GROUP })
@@ -117,9 +120,15 @@ export class PermissionSubGroups {
   })
   @JoinColumn({
     name: ATTR_COLUMN_PERMISSION_SUB_GROUP.INT_GROUP,
-    referencedColumnName: ATTR_COLUMN_PERMISSION_GROUP.INT_ID,
+    referencedColumnName: 'id',
   })
   [ATTR_COLUMN_PERMISSION_SUB_GROUP.RELATION_GROUP]?: PermissionGroups;
+
+  @OneToMany(
+    () => Permissions,
+    (permission) => permission[ATTR_COLUMN_PERMISSION.RELATION_SUB_GROUP],
+  )
+  [ATTR_COLUMN_PERMISSION_SUB_GROUP.RELATION_PERMISSION]: Permissions[];
 
   @AfterLoad()
   encodeValue() {

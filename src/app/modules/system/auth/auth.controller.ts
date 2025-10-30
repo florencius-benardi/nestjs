@@ -12,11 +12,7 @@ import { LoginUser } from './auth.validator';
 import { buildResponse } from '../../../commons/utils/response.util';
 import { AuthService } from '../../../domains/system/auth/auth.service';
 import { RefreshJWTAuthGuard } from '../../../../configs/auth/guards/refresh.guard';
-import {
-  ATTR_COLUMN_USER,
-  Users,
-} from '../../../../database/entities/user.entity';
-import { AccessJWTAuthGuard } from '../../../../configs/auth/guards/access.guard';
+import { ATTR_COLUMN_USER } from '../../../../database/entities/user.entity';
 import { JWTUserInterface } from '../../../commons/interface/jwt.interface';
 
 @Controller('authentication')

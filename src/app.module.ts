@@ -7,18 +7,20 @@ import {
   typeOrmSessionConfig,
 } from './configs/typeorm.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './app/modules/system/auth/auth.module';
+import { PermissionModule } from './app/modules/system/permission/permission.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { UserModule } from './app/modules/system/user/user.module';
 import { ValidationModule } from './app/modules/base/base.module';
-import { AuthModule } from './app/modules/system/auth/auth.module';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { RoleService } from './app/modules/system/role/role.service';
-import { PermissionService } from './app/modules/system/permission/permission.service';
-import { UserRoleService } from './app/modules/system/user-role/user-role.service';
-import { RolePermissionService } from './app/modules/system/role-permission/role-permission.service';
+import { RoleModule } from './app/modules/system/role/role.module';
+import { RolePermissionModule } from './app/modules/system/role-permission/role-permission.module';
+import { UserRoleModule } from './app/modules/system/user-role/user-role.module';
 
 @Module({
   imports: [
     AuthModule,
+    PermissionModule,
+    UserModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -41,13 +43,9 @@ import { RolePermissionService } from './app/modules/system/role-permission/role
       useFactory: typeOrmSessionConfig,
     }),
     ValidationModule,
-    UserModule,
-  ],
-  providers: [
-    RoleService,
-    PermissionService,
-    UserRoleService,
-    RolePermissionService,
+    RoleModule,
+    RolePermissionModule,
+    UserRoleModule,
   ],
 })
 export class AppModule {}

@@ -4,10 +4,15 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { encodedID } from '../../app/commons/utils/hashId.util';
 import { Expose } from 'class-transformer';
+import {
+  ATTR_COLUMN_PERMISSION_SUB_GROUP,
+  PermissionSubGroups,
+} from './permissionSubGroup.entity';
 
 export const ATTR_TABLE_PERMISSION_GROUP = 'permission_groups';
 export const ATTR_COLUMN_PERMISSION_GROUP = {
@@ -20,6 +25,7 @@ export const ATTR_COLUMN_PERMISSION_GROUP = {
   DATETIME_UPDATED: 'updated_at',
   DATETIME_DELETED: 'deleted_at',
   CHAR_ENCRYPTION: 'encryption_id',
+  RELATION_SUB_GROUP: 'permission_sub_group',
 } as const;
 
 @Entity({ name: ATTR_TABLE_PERMISSION_GROUP })
@@ -92,6 +98,12 @@ export class PermissionGroups {
 
   @Expose({ name: ATTR_COLUMN_PERMISSION_GROUP.CHAR_ENCRYPTION })
   [ATTR_COLUMN_PERMISSION_GROUP.CHAR_ENCRYPTION]?: string;
+
+  @OneToMany(
+    () => PermissionSubGroups,
+    (subGroup) => subGroup[ATTR_COLUMN_PERMISSION_SUB_GROUP.RELATION_GROUP],
+  )
+  [ATTR_COLUMN_PERMISSION_GROUP.RELATION_SUB_GROUP]: PermissionSubGroups[];
 
   @AfterLoad()
   encodeValue() {

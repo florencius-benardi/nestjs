@@ -17,16 +17,9 @@ import {
   PersonalAccessToken,
 } from '../../../../database/entities/session/token.entity';
 import { LoginUser } from '../../../modules/system/auth/auth.validator';
-import {
-  addNowDay,
-  addNowDayEndOfDay,
-  pluck,
-} from '../../../commons/utils/manipulate.util';
+import { addNowDayEndOfDay } from '../../../commons/utils/manipulate.util';
 import dayjs from 'dayjs';
-import {
-  ATTR_COLUMN_USER_ROLE,
-  UserRoles,
-} from '../../../../database/entities/userRole.entity';
+import { ATTR_COLUMN_USER_ROLE } from '../../../../database/entities/userRole.entity';
 import { ATTR_COLUMN_PERMISSION } from '../../../../database/entities/permission.entity';
 import { ATTR_COLUMN_ROLE } from '../../../../database/entities/role.entity';
 import { ATTR_COLUMN_ROLE_PERMISSION } from '../../../../database/entities/rolePermission.entity';
@@ -37,8 +30,6 @@ export class AuthService extends BaseService {
     private readonly jwtService: JwtService,
     @InjectRepository(Users, MAIN)
     private readonly userRepository: Repository<Users>,
-    @InjectRepository(UserRoles, MAIN)
-    private readonly userRoleRepository: Repository<UserRoles>,
     @InjectRepository(PersonalAccessToken, SESSION)
     private readonly tokenRepository: Repository<PersonalAccessToken>,
   ) {

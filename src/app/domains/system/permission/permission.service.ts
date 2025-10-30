@@ -1,34 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { BaseService } from '../../base.service';
-import { MAIN } from '../../../../configs/typeorm.config';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
-  ATTR_COLUMN_PERMISSION,
-  Permissions,
-} from '../../../../database/entities/permission.entity';
+  ATTR_COLUMN_PERMISSION_GROUP,
+  PermissionGroups,
+} from '../../../../database/entities/permissionGroup.entity';
+import { MAIN } from '../../../../configs/typeorm.config';
+import { Repository } from 'typeorm';
 import { ReadPermissions } from '../../../modules/system/permission/permission.validator';
 
 @Injectable()
 export class PermissionService extends BaseService {
   constructor(
-    @InjectRepository(Permissions, MAIN)
-    private readonly permissionRepository: Repository<Permissions>,
+    @InjectRepository(PermissionGroups, MAIN)
+    private readonly permissionGroupRepo: Repository<PermissionGroups>,
   ) {
     super();
   }
 
-  async reads(dto: ReadPermissions) {
-    const { length, start, orderBy, sortOrder } = dto;
+  async reads(query: ReadPermissions) {
+    const { orderBy, sortOrder } = query;
     const order = this.orderQuery(sortOrder, orderBy, [
-      ATTR_COLUMN_PERMISSION.DATETIME_UPDATED,
+      ATTR_COLUMN_PERMISSION_GROUP.INT_ID,
       'DESC',
     ]);
-    const { take, skip } = this.limitOffset(length, start);
-    const result = await this.permissionRepository.findAndCount({
-      skip,
-      take,
+
+    const result = await this.permissionGroupRepo.findAndCount({
       order,
+      relations: {
+        permission_sub_group: {
+          permission: true,
+        },
+      },
       loadEagerRelations: true,
     });
 

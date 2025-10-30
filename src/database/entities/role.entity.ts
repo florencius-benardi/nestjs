@@ -46,7 +46,6 @@ export class Roles {
   @Column({
     name: ATTR_COLUMN_ROLE.CHAR_DESCRIPTION,
     length: 50,
-    update: false,
   })
   [ATTR_COLUMN_ROLE.CHAR_DESCRIPTION]: string;
 

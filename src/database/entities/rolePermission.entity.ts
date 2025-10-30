@@ -117,7 +117,7 @@ export class RolePermissions {
   })
   [ATTR_COLUMN_ROLE_PERMISSION.RELATION_ROLE]?: Roles[];
 
-  @Expose({ name: ATTR_COLUMN_ROLE_PERMISSION.INT_PERMISSION })
+  @Expose({ name: ATTR_COLUMN_ROLE_PERMISSION.RELATION_PERMISSION })
   @ManyToOne(
     () => Permissions,
     (permission) =>
