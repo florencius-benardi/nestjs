@@ -8,10 +8,26 @@ import { PersonalAccessToken } from '../../../../database/entities/session/token
 import { MAIN, SESSION } from '../../../../configs/typeorm.config';
 import { Users } from '../../../../database/entities/user.entity';
 import { UserRoles } from '../../../../database/entities/userRole.entity';
+import { Roles } from '../../../../database/entities/role.entity';
+import { RolePermissions } from '../../../../database/entities/rolePermission.entity';
+import { Permissions } from '../../../../database/entities/permission.entity';
+import { PermissionGroups } from '../../../../database/entities/permissionGroup.entity';
+import { PermissionSubGroups } from '../../../../database/entities/permissionSubGroup.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Users, UserRoles], MAIN),
+    TypeOrmModule.forFeature(
+      [
+        Users,
+        Roles,
+        UserRoles,
+        RolePermissions,
+        Permissions,
+        PermissionGroups,
+        PermissionSubGroups,
+      ],
+      MAIN,
+    ),
     TypeOrmModule.forFeature([PersonalAccessToken], SESSION),
     AuthModule,
   ],

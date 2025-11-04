@@ -1,5 +1,6 @@
 import { IsOptional } from 'class-validator';
 import { Expose } from 'class-transformer';
+import { BaseDatatable } from '../../base/base.validator';
 
 export class StoreUserRole {
   @Expose({ name: 'id' })
@@ -13,3 +14,5 @@ export class StoreUserRole {
   @IsOptional()
   role?: string | number;
 }
+
+export class ReadUserRoles extends BaseDatatable {}

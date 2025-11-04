@@ -15,6 +15,7 @@ import { ValidationModule } from './app/modules/base/base.module';
 import { RoleModule } from './app/modules/system/role/role.module';
 import { RolePermissionModule } from './app/modules/system/role-permission/role-permission.module';
 import { UserRoleModule } from './app/modules/system/user-role/user-role.module';
+import { SettingModule } from './app/modules/system/setting/setting.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { UserRoleModule } from './app/modules/system/user-role/user-role.module'
     RoleModule,
     RolePermissionModule,
     UserRoleModule,
+    SettingModule,
   ],
 })
 export class AppModule {}
